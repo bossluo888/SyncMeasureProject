@@ -50,6 +50,9 @@
             this.zedGraphControl1 = new ZedGraph.ZedGraphControl();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label9 = new System.Windows.Forms.Label();
+            this.startButton = new System.Windows.Forms.Button();
+            this.portTextBox = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -247,18 +250,49 @@
             this.label9.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label9.ForeColor = System.Drawing.Color.Black;
             this.label9.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label9.Location = new System.Drawing.Point(129, 11);
+            this.label9.Location = new System.Drawing.Point(123, 1);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(35, 14);
             this.label9.TabIndex = 12;
             this.label9.Text = "误差";
             this.label9.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
+            // startButton
+            // 
+            this.startButton.Location = new System.Drawing.Point(217, 84);
+            this.startButton.Name = "startButton";
+            this.startButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.startButton.Size = new System.Drawing.Size(60, 23);
+            this.startButton.TabIndex = 20;
+            this.startButton.Text = "开始";
+            this.startButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.startButton.UseVisualStyleBackColor = true;
+            this.startButton.Click += new System.EventHandler(this.startButton_Click);
+            // 
+            // portTextBox
+            // 
+            this.portTextBox.Location = new System.Drawing.Point(94, 84);
+            this.portTextBox.Name = "portTextBox";
+            this.portTextBox.Size = new System.Drawing.Size(100, 21);
+            this.portTextBox.TabIndex = 21;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(29, 88);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(41, 12);
+            this.label10.TabIndex = 22;
+            this.label10.Text = "端口号";
+            // 
             // SyncMeasureForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1090, 381);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.portTextBox);
+            this.Controls.Add(this.startButton);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.zedGraphControl1);
             this.Controls.Add(this.label8);
@@ -304,6 +338,9 @@
         private ZedGraph.ZedGraphControl zedGraphControl1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button startButton;
+        private System.Windows.Forms.TextBox portTextBox;
+        private System.Windows.Forms.Label label10;
     }
 }
 

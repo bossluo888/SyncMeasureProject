@@ -22,7 +22,7 @@ namespace SyncMeasureProject
     public partial class SyncMeasureForm : Form
     {
         List<PC> connection = new List<PC>();
-        private const int PORT = 8888; // TCP端口号默认为8888
+        private int PORT = 8888; // TCP端口号默认为8888
         static Socket serverSocket;
         bool autorefresh = true;
         string inputPc1, inputPc2;
@@ -164,13 +164,7 @@ namespace SyncMeasureProject
         }
         private void SyncMeasureForm_Load(object sender, EventArgs e)
         {
-            IPAddress ip = IPAddress.Any;
-            serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            serverSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            serverSocket.Bind(new IPEndPoint(ip, PORT));  //绑定IP地址：端口  
-            serverSocket.Listen(50);
-            Thread th = new Thread(server);
-            th.Start(serverSocket);
+            portTextBox.Text = "8888";
             myCurve = zedGraphControl1.GraphPane.AddCurve("Offset between two PCs", pointPairList, Color.DarkGreen, SymbolType.Circle);
             myCurve.Line.Width = 2.0F;
         }
@@ -372,6 +366,27 @@ namespace SyncMeasureProject
         private void label6_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void startButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PORT = Convert.ToInt32(portTextBox.Text);
+                IPAddress ip = IPAddress.Any;
+                serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                serverSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                serverSocket.Bind(new IPEndPoint(ip, PORT));  //绑定IP地址：端口  
+                serverSocket.Listen(50);
+                Thread th = new Thread(server);
+                th.Start(serverSocket);
+                startButton.Enabled = false;
+                MessageBox.Show("测量服务器已开启");
+            }
+            catch
+            {
+                MessageBox.Show("输入端口错误");
+            }
         }
 
         private void zedGraphControl1_Load(object sender, EventArgs e)
