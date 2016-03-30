@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 using System.Net.NetworkInformation;
 using ZedGraph;
 
- 
+
 
 namespace SyncMeasureProject
 {
@@ -50,7 +50,7 @@ namespace SyncMeasureProject
             myPane.XAxis.Scale.MajorStep = 5;
             myPane.Title.FontSpec.Size = 22;
             myPane.XAxis.Title.FontSpec.Size = 16;
-            myPane.YAxis.Title.FontSpec.Size = 16;            
+            myPane.YAxis.Title.FontSpec.Size = 16;
             System.Timers.Timer timer = new System.Timers.Timer(1000);
             timer.Elapsed += new System.Timers.ElapsedEventHandler(refresh);
             timer.AutoReset = true;
@@ -102,7 +102,8 @@ namespace SyncMeasureProject
                     {
                         pointPairList.RemoveAt(0);
                     }
-                    if (offset >= 0) {
+                    if (offset >= 0)
+                    {
                         sign = "";
                         absOffset = offset;
                     }
@@ -117,8 +118,7 @@ namespace SyncMeasureProject
                     textBox4.Text = (absOffset % 1000000000).ToString("D9").Substring(6, 3);
                     if (offset != preOffset)
                     {
-                        if (offset >= 0)
-                            record("offset " + timeStamp1 + ": " + sign + (absOffset / 1000000000).ToString() + "s " + (absOffset % 1000000000).ToString("D9") + "ns");
+                        record("offset " + timeStamp1 + ": " + sign + (absOffset / 1000000000).ToString() + "s " + (absOffset % 1000000000).ToString("D9") + "ns");
                         preOffset = offset;
                         if (ret == 30)
                         {
