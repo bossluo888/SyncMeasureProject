@@ -23,7 +23,6 @@ namespace SyncMeasureProject
     {
         List<PC> connection = new List<PC>();
         private const int PORT = 8888; // TCP端口号默认为8888
-        private static byte[] result = new byte[1024];
         static Socket serverSocket;
         bool autorefresh = true;
         string inputPc1, inputPc2;
@@ -38,14 +37,15 @@ namespace SyncMeasureProject
         {
             InitializeComponent();
             zedGraphControl1.IsEnableVZoom = true;    // 允许缩放
+            zedGraphControl1.IsShowPointValues = true;  // 鼠标悬停显示数值
             GraphPane myPane = zedGraphControl1.GraphPane;//使用bin文件夹中的ZedGraph控件
             myPane.Title.Text = "OFFSET";          //标题
             myPane.XAxis.Title.Text = "Time";     //横坐标
-            myPane.YAxis.Title.Text = "Offset ( us )";  //纵坐标
-            myPane.YAxis.Scale.Min = 0;           //Y轴最小值0   
-            myPane.YAxis.Scale.Max = 100;        //Y轴最大500   
-            myPane.YAxis.Scale.MinorStep = 10;   //Y轴小步长10,也就是小间隔   
-            myPane.YAxis.Scale.MajorStep = 50;   //Y轴大步长为50，也就是显示文字的大间隔   
+            myPane.YAxis.Title.Text = "Offset ( us )";  //纵坐标  
+            myPane.YAxis.Scale.MaxAuto = true;   //自动调整Y轴最大值
+            myPane.YAxis.Scale.MinAuto = true;   //自动调整Y轴最小值
+            myPane.YAxis.Scale.MinorStepAuto = true;   // 自动调整Y轴小步长
+            myPane.YAxis.Scale.MajorStepAuto = true;   // 自动调整Y轴主步长
             myPane.XAxis.Scale.MinorStep = 5;
             myPane.XAxis.Scale.MajorStep = 5;
             myPane.Title.FontSpec.Size = 22;
@@ -92,16 +92,8 @@ namespace SyncMeasureProject
                         inputPc2 = comboBox2.Text;
                         listBox1.Items.Clear();
                     }
-                    richTextBox1.Text = "vm1: stamp:" + timeStamp1 + " s:" + timeS1 + " ns:" + timeNs1 + "\r\n" + "vm2:stamp:" + timeStamp2 + " s:" + timeS2 + " ns:" + timeNs2;
+                    richTextBox1.Text = "vm1: stamp:" + timeStamp1.ToString("D6") + " s:" + timeS1 + " ns:" + timeNs1 + "\r\n" + "vm2: stamp:" + timeStamp2.ToString("D6") + " s:" + timeS2 + " ns:" + timeNs2;
                     offset = (timeS1 * 1000000000 + timeNs1) - (timeS2 * 1000000000 + timeNs2);
-                    zedGraphControl1.GraphPane.XAxis.Scale.MaxAuto = true;
-                    pointPairList.Add((stamptosecond(timeStamp1)), Math.Abs(offset) / 1000);
-                    this.zedGraphControl1.AxisChange();
-                    this.zedGraphControl1.Refresh();
-                    if (pointPairList.Count >= 50)
-                    {
-                        pointPairList.RemoveAt(0);
-                    }
                     if (offset >= 0)
                     {
                         sign = "";
@@ -112,13 +104,22 @@ namespace SyncMeasureProject
                         sign = "-";
                         absOffset = -offset;
                     }
+                    zedGraphControl1.GraphPane.XAxis.Scale.MaxAuto = true;
+                    pointPairList.Add((stamptosecond(timeStamp1)), offset / 1000);
+                    this.zedGraphControl1.AxisChange();
+                    this.zedGraphControl1.Invalidate();   
+                    //this.zedGraphControl1.Refresh();
+                    if (pointPairList.Count >= 50)
+                    {
+                        pointPairList.RemoveAt(0);
+                    }
                     textBox1.Text = sign + (absOffset / 1000000000).ToString();
                     textBox2.Text = (absOffset % 1000000000).ToString("D9").Substring(0, 3);
                     textBox3.Text = (absOffset % 1000000000).ToString("D9").Substring(3, 3);
                     textBox4.Text = (absOffset % 1000000000).ToString("D9").Substring(6, 3);
                     if (offset != preOffset)
                     {
-                        record("offset " + timeStamp1 + ": " + sign + (absOffset / 1000000000).ToString() + "s " + (absOffset % 1000000000).ToString("D9") + "ns");
+                        record(timeStamp1.ToString("D6") + ": " + "offset: " + sign + (absOffset / 1000000000).ToString() + "." + (absOffset % 1000000000).ToString("D9") + " s");
                         preOffset = offset;
                         if (ret == 30)
                         {
@@ -151,11 +152,11 @@ namespace SyncMeasureProject
                         }
                         if (average >= 0)
                         {
-                            textBox5.Text = (average / 1000000000).ToString() + "." + (average % 1000000000).ToString("D9");
+                            textBox5.Text = (average / 1000000000).ToString() + "." + (average % 1000000000).ToString("D9") + " s";
                         }
                         if (average < 0)
                         {
-                            textBox5.Text = "-" + (-average / 1000000000).ToString() + "." + (-average % 1000000000).ToString("D9");
+                            textBox5.Text = "-" + (-average / 1000000000).ToString() + "." + (-average % 1000000000).ToString("D9") + " s";
                         }
                     }
                 }
@@ -188,6 +189,7 @@ namespace SyncMeasureProject
         {
             long timeS;
             int timeStamp, timeNs;
+            byte[] result = new byte[1024];
             PC thispc = new PC();
             connection.Add(thispc);
             Socket myClientSocket = (Socket)clientSocket;
@@ -203,11 +205,11 @@ namespace SyncMeasureProject
                     {
                         removepcIncomboBox1(thispc.PcName);
                         removepcIncomboBox2(thispc.PcName);
-                        foreach (PC p in connection)
+                        foreach (PC pc in connection)
                         {
-                            if (string.Equals(p.PcName, thispc.PcName))
+                            if (string.Equals(pc.PcName, thispc.PcName))
                             {
-                                connection.Remove(p);
+                                connection.Remove(pc);
                             }
                         }
                         return;
@@ -215,13 +217,14 @@ namespace SyncMeasureProject
                     timeStamp = BitConverter.ToInt32(result, 0) * 10000 + BitConverter.ToInt32(result, 4) * 100 + BitConverter.ToInt32(result, 8);
                     timeS = BitConverter.ToInt64(result, 12);
                     timeNs = BitConverter.ToInt32(result, 20);
-                    foreach (PC p in connection)
+                    Array.Clear(result, 0, result.Length);
+                    foreach (PC pc in connection)
                     {
-                        if (string.Equals(p.PcName, thispc.PcName))
+                        if (string.Equals(pc.PcName, thispc.PcName))
                         {
-                            p.TimeStamp = timeStamp;
-                            p.TimeS = timeS;
-                            p.TimeNs = timeNs;
+                            pc.TimeStamp = timeStamp;
+                            pc.TimeS = timeS;
+                            pc.TimeNs = timeNs;
                         }
                     }
                 }
@@ -379,6 +382,8 @@ namespace SyncMeasureProject
 
     class PC
     {
+        
+        public PC(){}
         public string PcName;
         public int TimeStamp, TimeNs;
         public long TimeS;
