@@ -27,8 +27,9 @@ namespace SyncMeasureProject
         bool autorefresh = true;
         string inputPc1, inputPc2;
         long[] lastOffset30 = new long[30];
+        long curAverSum = 0;
         long average = 0;
-        int ret = 0;
+        int averNum = 0;
         bool top = false;
         long preOffset = 0;
         PointPairList pointPairList = new PointPairList();
@@ -42,16 +43,18 @@ namespace SyncMeasureProject
             myPane.Title.Text = "OFFSET";          //标题
             myPane.XAxis.Title.Text = "Time";     //横坐标
             myPane.YAxis.Title.Text = "Offset ( us )";  //纵坐标  
-            myPane.YAxis.Scale.MaxAuto = true;   //自动调整Y轴最大值
-            myPane.YAxis.Scale.MinAuto = true;   //自动调整Y轴最小值
+            myPane.YAxis.Scale.MaxAuto = true;   // 自动调整Y轴最大值
+            myPane.YAxis.Scale.MinAuto = true;   // 自动调整Y轴最小值
             myPane.YAxis.Scale.MinorStepAuto = true;   // 自动调整Y轴小步长
             myPane.YAxis.Scale.MajorStepAuto = true;   // 自动调整Y轴主步长
-            myPane.XAxis.Scale.MinorStep = 5;
-            myPane.XAxis.Scale.MajorStep = 5;
-            myPane.Title.FontSpec.Size = 22;
-            myPane.XAxis.Title.FontSpec.Size = 16;
-            myPane.YAxis.Title.FontSpec.Size = 16;
-            System.Timers.Timer timer = new System.Timers.Timer(1000);
+            myPane.XAxis.Scale.MaxAuto = true;   //自动调整X轴最大值
+            myPane.XAxis.Scale.MinAuto = true;   //自动调整X轴最小值
+            myPane.XAxis.Scale.MinorStep = 5;   // X轴的小步长
+            myPane.XAxis.Scale.MajorStep = 5;  // X轴的主步长
+            myPane.Title.FontSpec.Size = 22;  // 标题字体大小
+            myPane.XAxis.Title.FontSpec.Size = 16;  // X轴标签字体大小
+            myPane.YAxis.Title.FontSpec.Size = 16;  // Y轴标签字体大小
+            System.Timers.Timer timer = new System.Timers.Timer(1000);  // 每隔1秒更新一次界面
             timer.Elapsed += new System.Timers.ElapsedEventHandler(refresh);
             timer.AutoReset = true;
             timer.Enabled = true;
@@ -68,7 +71,7 @@ namespace SyncMeasureProject
                 int timeNs1 = 0, timeNs2 = 0, timeStamp1 = 0, timeStamp2 = 0;
                 long offset, timeS1 = 0, timeS2 = 0;
                 long absOffset;
-                string sign;
+                string sign, strSec, strNSec;
                 foreach (PC pc in connection)
                 {
                     if (string.Equals(pc.PcName, comboBox1.Text))
@@ -96,7 +99,7 @@ namespace SyncMeasureProject
                     offset = (timeS1 * 1000000000 + timeNs1) - (timeS2 * 1000000000 + timeNs2);
                     if (offset >= 0)
                     {
-                        sign = "";
+                        sign = " ";
                         absOffset = offset;
                     }
                     else
@@ -104,52 +107,55 @@ namespace SyncMeasureProject
                         sign = "-";
                         absOffset = -offset;
                     }
-                    zedGraphControl1.GraphPane.XAxis.Scale.MaxAuto = true;
-                    pointPairList.Add((stamptosecond(timeStamp1)), offset / 1000);
+                    strSec = sign + (absOffset / 1000000000).ToString();
+                    strNSec = (absOffset % 1000000000).ToString("D9");
+                    pointPairList.Add((stamptosecond(timeStamp1)), offset / 1000);  // 增加数据点
                     this.zedGraphControl1.AxisChange();
                     this.zedGraphControl1.Invalidate();   
                     //this.zedGraphControl1.Refresh();
-                    if (pointPairList.Count >= 50)
+                    if (pointPairList.Count >= 50)   // 保持50个数据点
                     {
                         pointPairList.RemoveAt(0);
                     }
-                    textBox1.Text = sign + (absOffset / 1000000000).ToString();
-                    textBox2.Text = (absOffset % 1000000000).ToString("D9").Substring(0, 3);
-                    textBox3.Text = (absOffset % 1000000000).ToString("D9").Substring(3, 3);
-                    textBox4.Text = (absOffset % 1000000000).ToString("D9").Substring(6, 3);
+                    /**
+                     * 将误差显示为秒，毫秒，微妙，纳秒的形式
+                     */
+                    textBox1.Text = strSec;
+                    textBox2.Text = strNSec.Substring(0, 3);
+                    textBox3.Text = strNSec.Substring(3, 3);
+                    textBox4.Text = strNSec.Substring(6, 3);
                     if (offset != preOffset)
                     {
-                        record(timeStamp1.ToString("D6") + ": " + "offset: " + sign + (absOffset / 1000000000).ToString() + "." + (absOffset % 1000000000).ToString("D9") + " s");
+                        /**
+                         * 将误差显示为秒的形式，并保持记录历史数据
+                         */
+                        record(timeStamp1.ToString("D6") + ": " + "offset: " + strSec + "." + strNSec + " s");
                         preOffset = offset;
-                        if (ret == 30)
+                        /**
+                         * 计算最近30个数据的平均值
+                         */
+                        if (averNum == 30)
                         {
-                            ret = 0;
+                            averNum = 0;
                             top = true;
                         }
-                        if (ret < 30)
+                        if (averNum < 30)
                         {
-                            lastOffset30[ret] = offset;
+                            curAverSum = curAverSum - lastOffset30[averNum] + offset;
+                            lastOffset30[averNum] = offset;
                         }
                         if (top)
                         {
-                            long all = 0;
-                            for (int i = 0; i < 30; i++)
-                            {
-                                all += lastOffset30[i];
-                            }
-                            average = (long)Math.Round((double)(all / 30), 0);
-                            ret += 1;
+                            average = (long)Math.Round((double)(curAverSum / 30), 0);
                         }
                         if (!top)
                         {
-                            long all = 0;
-                            for (int i = 0; i <= ret; i++)
-                            {
-                                all += lastOffset30[i];
-                            }
-                            average = (long)Math.Round((double)(all / (ret + 1)), 0);
-                            ret += 1;
+                            average = (long)Math.Round((double)(curAverSum / (averNum + 1)), 0);                            
                         }
+                        averNum += 1;
+                        /**
+                         * 显示误差平均值，显示为秒的形式
+                         */
                         if (average >= 0)
                         {
                             textBox5.Text = (average / 1000000000).ToString() + "." + (average % 1000000000).ToString("D9") + " s";
@@ -164,9 +170,9 @@ namespace SyncMeasureProject
         }
         private void SyncMeasureForm_Load(object sender, EventArgs e)
         {
-            portTextBox.Text = "8888";
-            myCurve = zedGraphControl1.GraphPane.AddCurve("Offset between two PCs", pointPairList, Color.DarkGreen, SymbolType.Circle);
-            myCurve.Line.Width = 2.0F;
+            portTextBox.Text = "8888";  // 默认端口号为8888
+            myCurve = zedGraphControl1.GraphPane.AddCurve("Offset between two PCs", pointPairList, Color.DarkGreen, SymbolType.Circle);  // 开始添加折线
+            myCurve.Line.Width = 2.0F;  // 设置折线的线条宽度
         }
         private void server(Object sk)
         {
@@ -245,7 +251,7 @@ namespace SyncMeasureProject
         {
             if (comboBox1.InvokeRequired)
             {
-                NewPc1 newPc1 = new NewPc1(addpcTocomboBox1);//子线程调用主线程控件时需要判断控件是否invokerequired
+                NewPc1 newPc1 = new NewPc1(addpcTocomboBox1); //子线程调用主线程控件时需要判断控件是否invokerequired，线程安全考虑
                 this.Invoke(newPc1, new object[] { text });
             }
             else
@@ -337,7 +343,7 @@ namespace SyncMeasureProject
             for (int i = 0; i < 30; i++)
                 lastOffset30[i] = 0;
             average = 0;
-            ret = 0;
+            averNum = 0;
             top = false;
             listBox1.Items.Clear();
             myCurve.Clear();
@@ -347,7 +353,7 @@ namespace SyncMeasureProject
             for (int i = 0; i < 30; i++)
                 lastOffset30[i] = 0;
             average = 0;
-            ret = 0;
+            averNum = 0;
             top = false;
             listBox1.Items.Clear();
             myCurve.Clear();
@@ -363,11 +369,6 @@ namespace SyncMeasureProject
             catch { }
         }
 
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void startButton_Click(object sender, EventArgs e)
         {
             try
@@ -381,7 +382,7 @@ namespace SyncMeasureProject
                 Thread th = new Thread(server);
                 th.Start(serverSocket);
                 startButton.Enabled = false;
-                MessageBox.Show("测量服务器已开启");
+                MessageBox.Show("同步测量服务器已开启");
             }
             catch
             {
@@ -389,10 +390,6 @@ namespace SyncMeasureProject
             }
         }
 
-        private void zedGraphControl1_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 
     class PC

@@ -69,18 +69,20 @@
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(127, 127);
+            this.comboBox1.Location = new System.Drawing.Point(82, 126);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(150, 20);
+            this.comboBox1.Size = new System.Drawing.Size(189, 20);
             this.comboBox1.TabIndex = 1;
+            this.comboBox1.Text = "- 请选择终端 -";
             // 
             // comboBox2
             // 
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(126, 161);
+            this.comboBox2.Location = new System.Drawing.Point(82, 160);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(151, 20);
+            this.comboBox2.Size = new System.Drawing.Size(189, 20);
             this.comboBox2.TabIndex = 2;
+            this.comboBox2.Text = "- 请选择终端 -";
             // 
             // textBox1
             // 
@@ -157,17 +159,16 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(60, 129);
+            this.label6.Location = new System.Drawing.Point(20, 130);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(23, 12);
             this.label6.TabIndex = 12;
             this.label6.Text = "vm1";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(60, 163);
+            this.label7.Location = new System.Drawing.Point(20, 163);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(23, 12);
             this.label7.TabIndex = 13;
@@ -195,15 +196,15 @@
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(140, 313);
+            this.textBox5.Location = new System.Drawing.Point(82, 313);
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(133, 21);
+            this.textBox5.Size = new System.Drawing.Size(114, 21);
             this.textBox5.TabIndex = 16;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(58, 319);
+            this.label8.Location = new System.Drawing.Point(20, 316);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(53, 12);
             this.label8.TabIndex = 17;
@@ -222,9 +223,8 @@
             this.zedGraphControl1.ScrollMinX = 0D;
             this.zedGraphControl1.ScrollMinY = 0D;
             this.zedGraphControl1.ScrollMinY2 = 0D;
-            this.zedGraphControl1.Size = new System.Drawing.Size(438, 335);
+            this.zedGraphControl1.Size = new System.Drawing.Size(441, 352);
             this.zedGraphControl1.TabIndex = 18;
-            this.zedGraphControl1.Load += new System.EventHandler(this.zedGraphControl1_Load);
             // 
             // panel1
             // 
@@ -237,9 +237,9 @@
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.textBox4);
             this.panel1.Controls.Add(this.label5);
-            this.panel1.Location = new System.Drawing.Point(300, 85);
+            this.panel1.Location = new System.Drawing.Point(300, 84);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(301, 108);
+            this.panel1.Size = new System.Drawing.Size(301, 109);
             this.panel1.TabIndex = 19;
             // 
             // label9
@@ -250,7 +250,7 @@
             this.label9.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label9.ForeColor = System.Drawing.Color.Black;
             this.label9.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label9.Location = new System.Drawing.Point(123, 1);
+            this.label9.Location = new System.Drawing.Point(123, 9);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(35, 14);
             this.label9.TabIndex = 12;
@@ -259,27 +259,27 @@
             // 
             // startButton
             // 
-            this.startButton.Location = new System.Drawing.Point(217, 84);
+            this.startButton.Location = new System.Drawing.Point(172, 89);
             this.startButton.Name = "startButton";
-            this.startButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.startButton.Size = new System.Drawing.Size(60, 23);
+            this.startButton.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.startButton.Size = new System.Drawing.Size(99, 23);
             this.startButton.TabIndex = 20;
             this.startButton.Text = "开始";
-            this.startButton.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.startButton.UseVisualStyleBackColor = true;
             this.startButton.Click += new System.EventHandler(this.startButton_Click);
             // 
             // portTextBox
             // 
-            this.portTextBox.Location = new System.Drawing.Point(94, 84);
+            this.portTextBox.Location = new System.Drawing.Point(82, 91);
             this.portTextBox.Name = "portTextBox";
-            this.portTextBox.Size = new System.Drawing.Size(100, 21);
+            this.portTextBox.Size = new System.Drawing.Size(74, 21);
             this.portTextBox.TabIndex = 21;
+            this.portTextBox.Text = "8888";
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(29, 88);
+            this.label10.Location = new System.Drawing.Point(20, 96);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(41, 12);
             this.label10.TabIndex = 22;
