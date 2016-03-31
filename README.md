@@ -1,7 +1,7 @@
 # SyncMeasureProject
 
-一个TCP服务器，用于接收多台计算机上的TCP客户端约定相同时间定时发送的TimeStamp。
-从而计算其时间误差并将其可视化。
+时间同步测量软件。开启TCP服务器，用于接收多台计算机上的TCP客户端约定相同时间定时发送的时间戳。
+从而计算其时间误差并将其可视化，该误差即为两终端时间同步的误差。
 TCP客户端见Linux程序`TimeTools/Timer/tcp_client.c`，其目录下的README.md文件有客户端程序的详细使用说明。
 
 > 环境准备

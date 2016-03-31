@@ -109,7 +109,7 @@ namespace SyncMeasureProject
                     }
                     strSec = sign + (absOffset / 1000000000).ToString();
                     strNSec = (absOffset % 1000000000).ToString("D9");
-                    pointPairList.Add((stamptosecond(timeStamp1)), offset / 1000);  // 增加数据点
+                    pointPairList.Add((stamptosecond(timeStamp1)), (double)offset / 1000);  // 增加数据点，注意需转为double，因为可能出现小数
                     this.zedGraphControl1.AxisChange();
                     this.zedGraphControl1.Invalidate();   
                     //this.zedGraphControl1.Refresh();
@@ -189,11 +189,11 @@ namespace SyncMeasureProject
         {
             long timeS;
             int timeStamp, timeNs;
-            byte[] result = new byte[1024];
+            byte[] result = new byte[128];   // 接收缓存
             PC thispc = new PC();
             connection.Add(thispc);
             Socket myClientSocket = (Socket)clientSocket;
-            thispc.PcName = myClientSocket.RemoteEndPoint.ToString();//将客户端ip地址和端口号作为名字
+            thispc.PcName = myClientSocket.RemoteEndPoint.ToString();//将客户端ip地址和端口号作为终端名
             addpcTocomboBox1(thispc.PcName);
             addpcTocomboBox2(thispc.PcName);
             while (true)
