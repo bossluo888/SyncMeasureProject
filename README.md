@@ -14,8 +14,8 @@ Windows平台和.NET Framework 4.5框架
 
 > 安装和使用
 
-1. 双击SyncMeasureProject.ext文件即可打开程序界面。
-   注意ZedGraph.dll动态库文件应和exe文件位于同一目录下。
+1. 双击SyncMeasureProject*.exe文件即可打开程序界面。
+   注意ZedGraph.dll动态库文件和exe文件应位于同一目录下。
 
 2. 打开界面后点击界面标题下方的`开始`按钮即可启动TCP服务器，等待TCP客户端的连接。
    默认端口号为8888，若出现冲突也可自行设置端口号再点击`开始`按钮。
