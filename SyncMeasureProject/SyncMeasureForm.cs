@@ -87,7 +87,7 @@ namespace SyncMeasureProject
                         timeNs2 = pc.TimeNs;
                     }
                 }
-                if ((timeNs1 != 0 & timeNs2 != 0) && (timeStamp1 == timeStamp2))
+                if (timeStamp1 == timeStamp2)
                 {
                     if (!string.Equals(inputPc1, comboBox1.Text) || !string.Equals(inputPc2, comboBox2.Text))
                     {
