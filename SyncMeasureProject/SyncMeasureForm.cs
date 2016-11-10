@@ -15,8 +15,6 @@ using System.Runtime.InteropServices;
 using System.Net.NetworkInformation;
 using ZedGraph;
 
-
-
 namespace SyncMeasureProject
 {
     public partial class SyncMeasureForm : Form
@@ -87,6 +85,7 @@ namespace SyncMeasureProject
                         timeNs2 = pc.TimeNs;
                     }
                 }
+                // 如果两者的时间戳相同(取决于定时器)才显示数据，精确到秒
                 if (timeStamp1 == timeStamp2)
                 {
                     if (!string.Equals(inputPc1, comboBox1.Text) || !string.Equals(inputPc2, comboBox2.Text))
@@ -251,7 +250,7 @@ namespace SyncMeasureProject
         {
             if (comboBox1.InvokeRequired)
             {
-                NewPc1 newPc1 = new NewPc1(addpcTocomboBox1); //子线程调用主线程控件时需要判断控件是否invokerequired，线程安全考虑
+                NewPc1 newPc1 = new NewPc1(addpcTocomboBox1); // 子线程调用主线程控件时需要判断控件是否invokerequired，线程安全考虑
                 this.Invoke(newPc1, new object[] { text });
             }
             else
@@ -326,7 +325,6 @@ namespace SyncMeasureProject
             min = (stamp % 10000 - sec) / 100;
             hour = (stamp - min * 100 - sec) / 10000;
             return min * 60 + sec;
-
         }
         public void ListBoxAutoCroll(ListBox lbox)
         {
@@ -336,7 +334,11 @@ namespace SyncMeasureProject
         private void button1_Click(object sender, EventArgs e)
         {
             autorefresh = true;
-            listBox1.SetSelected(0, false);
+            // 防止没有数据而点刷新时出现的数组溢出异常
+            if (listBox1.Items.Count > 0)
+            {
+                listBox1.SetSelected(0, false);
+            }          
         }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -393,9 +395,7 @@ namespace SyncMeasureProject
     }
 
     class PC
-    {
-        
-        public PC(){}
+    {  
         public string PcName;
         public int TimeStamp, TimeNs;
         public long TimeS;
